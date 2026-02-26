@@ -8,7 +8,6 @@ import {
   TrendingUp,
   Briefcase,
   Target,
-  MessageSquare,
   LogOut,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -19,7 +18,6 @@ const NAV_ITEMS = [
   { href: "/analysis",   label: "Analysis",    Icon: TrendingUp },
   { href: "/holdings",   label: "Holdings",    Icon: Briefcase },
   { href: "/projection", label: "Projection",  Icon: Target },
-  { href: "/chat",       label: "AI Chat",     Icon: MessageSquare },
 ];
 
 export function Sidebar() {
