@@ -44,7 +44,8 @@ export default async function AnalysisPage() {
   return (
     <>
       <Header title="Analysis Report" lastUpdated={snapshot?.created_at ?? null} />
-      <div className="p-4 md:p-6 space-y-6 max-w-5xl">
+      <div className="p-4 md:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
 
         {/* ── Summary header ──────────────────────────────────────────────── */}
         <Card>
@@ -149,6 +150,7 @@ export default async function AnalysisPage() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </>
   );

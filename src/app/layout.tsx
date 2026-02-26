@@ -25,7 +25,7 @@ export default async function RootLayout({
           <div className="flex min-h-screen">
             <Sidebar />
             {/* Desktop: push content right of sidebar. Mobile: full width + bottom nav padding */}
-            <main className="flex-1 md:ml-56 min-h-screen pb-20 md:pb-0">
+            <main className="flex-1 md:ml-56 lg:ml-64 min-h-screen pb-20 md:pb-0">
               {children}
             </main>
           </div>

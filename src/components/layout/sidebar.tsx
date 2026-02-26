@@ -35,7 +35,7 @@ export function Sidebar() {
   return (
     <>
       {/* ── Desktop sidebar ──────────────────────────────────────────── */}
-      <aside className="hidden md:flex flex-col w-56 min-h-screen bg-[#16213e] border-r border-[#2d3748] fixed left-0 top-0 z-40">
+      <aside className="hidden md:flex flex-col w-56 lg:w-64 min-h-screen bg-[#16213e] border-r border-[#2d3748] fixed left-0 top-0 z-40">
         {/* Brand */}
         <div className="px-5 py-5 border-b border-[#2d3748]">
           <div className="flex items-center gap-2">

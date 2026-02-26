@@ -8,35 +8,42 @@ import {
   getLatestAnalysis,
   getLatestRecommendations,
 } from "@/lib/queries/analysis";
+import { getManualAssets, getManualDebts } from "@/lib/queries/manual-accounts";
 import { DashboardContent } from "@/components/dashboard/dashboard-content";
 
 export const revalidate = 3600; // revalidate hourly
 
 export default async function DashboardPage() {
-  const [snapshot, analysis, recommendations, holdings, enrichment] =
+  const [snapshot, analysis, recommendations, holdings, enrichment, manualAssets, manualDebts] =
     await Promise.all([
       getLatestSnapshot(),
       getLatestAnalysis(),
       getLatestRecommendations(),
       getLatestHoldings(),
       getLatestEnrichment(),
+      getManualAssets(),
+      getManualDebts(),
     ]);
 
   return (
     <>
       <Header title="Dashboard" lastUpdated={snapshot?.created_at ?? null} />
-      <div className="p-4 md:p-6">
-        {!snapshot ? (
-          <EmptyState />
-        ) : (
-          <DashboardContent
-            snapshot={snapshot}
-            analysis={analysis}
-            recommendations={recommendations}
-            holdings={holdings}
-            enrichment={enrichment}
-          />
-        )}
+      <div className="p-4 md:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          {!snapshot ? (
+            <EmptyState />
+          ) : (
+            <DashboardContent
+              snapshot={snapshot}
+              analysis={analysis}
+              recommendations={recommendations}
+              holdings={holdings}
+              enrichment={enrichment}
+              manualAssets={manualAssets}
+              manualDebts={manualDebts}
+            />
+          )}
+        </div>
       </div>
     </>
   );

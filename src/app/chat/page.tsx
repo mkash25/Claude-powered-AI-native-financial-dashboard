@@ -37,7 +37,8 @@ export default function ChatPage() {
       <Header title="AI Chat" lastUpdated={null} />
       <div className="flex flex-col h-[calc(100vh-64px)]">
         {/* ── Messages area ─────────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 md:px-6 space-y-4">
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-4 py-4 md:px-6 space-y-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-6">
               <Bot size={48} className="text-indigo-400 opacity-60" />
@@ -71,6 +72,7 @@ export default function ChatPage() {
             </div>
           )}
           <div ref={bottomRef} />
+          </div>
         </div>
 
         {/* ── Input area ────────────────────────────────────────────────────── */}

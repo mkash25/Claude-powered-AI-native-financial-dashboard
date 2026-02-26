@@ -47,9 +47,9 @@ export const PROJECTION_DEFAULTS = {
   monthlyContribution: 1000,
   annualContributionIncrease: 5,
   assumedAnnualReturn: 8,
-  retirementHsa: 85_711,
-  cashSavings: 29_449,
-  debts: 7_086,
+  retirementHsa: 0,
+  cashSavings: 0,
+  debts: 0,
   retirementAnnualReturn: 7,
 } as const;
 

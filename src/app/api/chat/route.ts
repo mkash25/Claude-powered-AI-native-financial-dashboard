@@ -54,6 +54,17 @@ async function fetchRecommendations(actionFilter?: string) {
   return data ?? [];
 }
 
+async function fetchManualTotals() {
+  const supabase = await createClient();
+  const [{ data: assets }, { data: debts }] = await Promise.all([
+    supabase.from("manual_assets").select("balance"),
+    supabase.from("manual_debts").select("balance"),
+  ]);
+  const assetsTotal = (assets ?? []).reduce((s: number, a: any) => s + (a.balance ?? 0), 0);
+  const debtsTotal = (debts ?? []).reduce((s: number, d: any) => s + (d.balance ?? 0), 0);
+  return { assetsTotal, debtsTotal };
+}
+
 async function fetchHoldingDetail(ticker: string) {
   const supabase = await createClient();
   const { data: snap } = await supabase
@@ -84,17 +95,20 @@ async function fetchHoldingDetail(ticker: string) {
 function runProjection(
   monthlyContrib: number,
   annualReturnPct: number,
-  targetAge: number
+  targetAge: number,
+  startBrokerage: number,
+  manualAssetsTotal: number,
+  manualDebtsTotal: number,
 ) {
   const D = PROJECTION_DEFAULTS;
-  let brokerage = 172_248; // current brokerage value
+  let brokerage = startBrokerage;
   const r = annualReturnPct / 100;
   const years = targetAge - D.currentAge;
 
   for (let i = 0; i < years; i++) {
     brokerage = brokerage * (1 + r) + monthlyContrib * 12;
   }
-  const total = brokerage + D.retirementHsa + D.cashSavings - D.debts;
+  const total = brokerage + manualAssetsTotal - manualDebtsTotal;
   return {
     targetAge,
     years,
@@ -106,19 +120,32 @@ function runProjection(
 
 // ── Route handler ──────────────────────────────────────────────────────────────
 
+const formatUSD = (v: number) => "$" + Math.round(v).toLocaleString();
+
 export async function POST(req: Request) {
   const { messages } = await req.json();
+
+  // Fetch live totals for system prompt + projection tool
+  const [portfolioSnap, manualTotals] = await Promise.all([
+    fetchPortfolioSummary(),
+    fetchManualTotals(),
+  ]);
+  const liveBrokerage = portfolioSnap?.total_value ?? 172_248;
+  const liveManualAssets = manualTotals.assetsTotal;
+  const liveManualDebts = manualTotals.debtsTotal;
+  const liveNetWorth = liveBrokerage + liveManualAssets - liveManualDebts;
 
   const result = await streamText({
     model: anthropic("claude-opus-4-5"),
     system: `You are a personal financial advisor AI with direct access to the user's investment portfolio data.
 You have tools to query their live portfolio including holdings, market data, Claude's analysis, and wealth projections.
 
-Key facts about this user:
+Key facts about this user (live from database):
 - Age 31, targeting financial independence at age 45
-- ~$172K in brokerage accounts (4 apps: Stash, Robinhood, SoFi, Acorns)
-- ~$85.7K in retirement/HSA accounts (not in Plaid)
-- ~$29.4K cash, ~$7K credit card debt
+- ${formatUSD(liveBrokerage)} in brokerage accounts (Plaid: Stash, Robinhood, SoFi, Acorns)
+- ${formatUSD(liveManualAssets)} in manually tracked assets (retirement accounts, cash, etc.)
+- ${formatUSD(liveManualDebts)} in tracked debts
+- True net worth: ${formatUSD(liveNetWorth)}
 - Contributing ~$1,000/month to brokerage
 
 Be direct, data-driven, and actionable. Use the tools to get real data before answering portfolio questions.
@@ -181,7 +208,8 @@ Format numbers as currency when relevant. Keep responses concise and focused.`,
             .describe("Age at which to compute projected net worth"),
         }),
         execute: async ({ monthly_contribution, annual_return_pct, target_age }) =>
-          runProjection(monthly_contribution, annual_return_pct, target_age),
+          runProjection(monthly_contribution, annual_return_pct, target_age,
+            liveBrokerage, liveManualAssets, liveManualDebts),
       }),
     },
   });

@@ -46,7 +46,8 @@ export default async function HoldingsPage() {
   return (
     <>
       <Header title="Holdings" lastUpdated={snapshot?.created_at ?? null} />
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-4 md:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
         {/* Summary bar */}
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <span>
@@ -144,6 +145,7 @@ export default async function HoldingsPage() {
               ))}
             </tbody>
           </table>
+        </div>
         </div>
       </div>
     </>
