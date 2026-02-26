@@ -7,7 +7,7 @@ import {
 import { BrokerageBadge } from "@/components/ui/badge";
 import { formatCurrency, formatPercent, gainLossColor, cn } from "@/lib/utils";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function HoldingsPage() {
   const [snapshot, holdings] = await Promise.all([

@@ -11,7 +11,7 @@ import {
 import { getManualAssets, getManualDebts } from "@/lib/queries/manual-accounts";
 import { DashboardContent } from "@/components/dashboard/dashboard-content";
 
-export const revalidate = 3600; // revalidate hourly
+export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const [snapshot, analysis, recommendations, holdings, enrichment, manualAssets, manualDebts] =

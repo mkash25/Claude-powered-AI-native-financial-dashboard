@@ -23,7 +23,7 @@ interface PageProps {
   params: { symbol: string };
 }
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function TickerPage({ params }: PageProps) {
   const symbol = params.symbol.toUpperCase();

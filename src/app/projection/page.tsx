@@ -3,7 +3,7 @@ import { getLatestSnapshot } from "@/lib/queries/portfolio";
 import { getManualAssets, getManualDebts } from "@/lib/queries/manual-accounts";
 import { ProjectionClient } from "./client";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function ProjectionPage() {
   const [snapshot, manualAssets, manualDebts] = await Promise.all([

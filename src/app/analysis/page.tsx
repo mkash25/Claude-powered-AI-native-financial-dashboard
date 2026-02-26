@@ -9,7 +9,7 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import type { Recommendation } from "@/lib/types/analysis";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function AnalysisPage() {
   const [snapshot, analysis, recommendations] = await Promise.all([
