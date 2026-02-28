@@ -67,7 +67,7 @@ export function DashboardContent({
         </div>
         <div className="md:col-span-4">
           {hasCategories ? (
-            <CategoryCards snapshot={snapshot} rsuGrants={rsuGrants} />
+            <CategoryCards snapshot={snapshot} rsuGrants={rsuGrants} manualAssets={manualAssets} />
           ) : (
             <BrokerageCards snapshot={snapshot} />
           )}
