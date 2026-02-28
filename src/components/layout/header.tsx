@@ -19,8 +19,10 @@ export function Header({ title, lastUpdated }: HeaderProps) {
   const [requestId, setRequestId] = useState<string | null>(null);
   const [recalcState, setRecalcState] = useState<"idle" | "done">("idle");
 
-  const handleRecalc = () => {
+  const handleRecalc = async () => {
     setRecalcState("done");
+    // Update RSU price + vested units from live market data, then refresh display
+    await fetch("/api/rsu-grants/recalc", { method: "POST" }).catch(() => {});
     router.refresh();
     setTimeout(() => setRecalcState("idle"), 1500);
   };
