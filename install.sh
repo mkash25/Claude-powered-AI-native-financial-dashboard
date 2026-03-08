@@ -50,16 +50,24 @@ python_upgrade_hint() {
     exit 1
 }
 
-if ! command -v python3 &>/dev/null; then
+# Resolve python binary — prefer python3.12 explicitly if python3 is older
+PYTHON_BIN=""
+if command -v python3.12 &>/dev/null; then
+    PYTHON_BIN="python3.12"
+elif command -v python3 &>/dev/null; then
+    PY_VER=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+    PY_MAJOR=$(echo "$PY_VER" | cut -d. -f1)
+    PY_MINOR=$(echo "$PY_VER" | cut -d. -f2)
+    if [[ "$PY_MAJOR" -ge 3 && "$PY_MINOR" -ge 12 ]]; then
+        PYTHON_BIN="python3"
+    else
+        python_upgrade_hint "$PY_VER"
+    fi
+else
     python_upgrade_hint "none found"
 fi
-PY_VER=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-PY_MAJOR=$(echo "$PY_VER" | cut -d. -f1)
-PY_MINOR=$(echo "$PY_VER" | cut -d. -f2)
-if [[ "$PY_MAJOR" -lt 3 || ("$PY_MAJOR" -eq 3 && "$PY_MINOR" -lt 12) ]]; then
-    python_upgrade_hint "$PY_VER"
-fi
-info "Python $PY_VER ✓"
+PY_VER=$($PYTHON_BIN -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+info "Python $PY_VER ✓  ($PYTHON_BIN)"
 
 # ── 2. Install uv if missing ───────────────────────────────────────────────────
 if ! command -v uv &>/dev/null; then
@@ -72,7 +80,7 @@ info "uv $(uv --version | awk '{print $2}') ✓"
 # ── 3. Install Python dependencies (agent) ────────────────────────────────────
 info "Installing Python dependencies..."
 cd "$AGENT_DIR"
-uv sync
+uv sync --python "$PYTHON_BIN"
 cd "$PROJECT_DIR"
 info "Python dependencies installed ✓"
 
