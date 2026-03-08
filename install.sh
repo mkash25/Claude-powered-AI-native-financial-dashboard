@@ -24,14 +24,40 @@ echo -e "  ${DIM}• agent/   — Python pipeline (Plaid → Claude → Supabase
 echo -e "  ${DIM}• ./       — Next.js dashboard${NC}"
 
 # ── 1. Check Python ────────────────────────────────────────────────────────────
+python_upgrade_hint() {
+    local found="$1"
+    echo -e "${RED}[error]${NC}  Python 3.12+ required (found $found).\n"
+    if [[ "$(uname)" == "Darwin" ]]; then
+        echo -e "  Quickest fix on macOS:\n"
+        echo -e "    ${BOLD}# Option 1 — Homebrew (recommended)${NC}"
+        echo -e "    brew install python@3.12"
+        echo -e "    echo 'export PATH=\"/opt/homebrew/bin:\$PATH\"' >> ~/.zshrc"
+        echo -e "    source ~/.zshrc\n"
+        echo -e "    ${BOLD}# Option 2 — pyenv${NC}"
+        echo -e "    brew install pyenv"
+        echo -e "    pyenv install 3.12"
+        echo -e "    pyenv global 3.12\n"
+        echo -e "    ${BOLD}# Option 3 — direct download${NC}"
+        echo -e "    https://python.org/downloads/\n"
+        echo -e "  After installing, open a new terminal and re-run: ${BOLD}bash install.sh${NC}"
+    else
+        echo -e "  On Ubuntu/Debian:"
+        echo -e "    sudo add-apt-repository ppa:deadsnakes/ppa"
+        echo -e "    sudo apt install python3.12 python3.12-venv\n"
+        echo -e "  Or use pyenv: https://github.com/pyenv/pyenv\n"
+        echo -e "  After installing, open a new terminal and re-run: ${BOLD}bash install.sh${NC}"
+    fi
+    exit 1
+}
+
 if ! command -v python3 &>/dev/null; then
-    die "Python 3.12+ is required. Install from https://python.org/downloads/"
+    python_upgrade_hint "none found"
 fi
 PY_VER=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 PY_MAJOR=$(echo "$PY_VER" | cut -d. -f1)
 PY_MINOR=$(echo "$PY_VER" | cut -d. -f2)
 if [[ "$PY_MAJOR" -lt 3 || ("$PY_MAJOR" -eq 3 && "$PY_MINOR" -lt 12) ]]; then
-    die "Python 3.12+ required (found $PY_VER). Install from https://python.org/downloads/"
+    python_upgrade_hint "$PY_VER"
 fi
 info "Python $PY_VER ✓"
 
